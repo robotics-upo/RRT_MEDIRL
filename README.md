@@ -68,7 +68,7 @@ To launch the script, you can use:
 ```
 python rrt_train_evaluate_and_predict.py
 ```
-This program do the same as rrt_train.py, rrt_predict.py and rrt_evaluate.py, but just in one file
+This program does the same as rrt_train.py, rrt_predict.py and rrt_evaluate.py, but just in one file
 
 
 

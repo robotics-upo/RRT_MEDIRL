@@ -90,3 +90,11 @@ The code to make the plots used in the paper are in this folder. All the code in
 [The data folder](data) should contain the dataset to use.
 
 
+## Authors
+
+* **Gonzalo Mier** - *Initial work* - [gonmiermu](https://github.com/gonmiermu)
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.

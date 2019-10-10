@@ -1,75 +1,92 @@
 # RRT_MEDIRL
 RRT_MEDIRL implementation for Tensorflow
 
-## Information
-For more information about this work please check paper: 
+## Getting Started
+
+For more information about this work please check this paper: 
 
 *Learning RRT\*-based human-aware path planning through Maximum Entropy Deep Inverse Reinforcement Learning* by G. Mier, N. Pérez-Higueras, F. Caballero and L. Merino. Submmited to the 2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2018) 
 
-The data used to train and test the model is in [here (new data)](http://robotics.upo.es/datasets/irlrrt/) and [here (upo_fcn_learning package)](https://github.com/robotics-upo/upo_fcn_learning/tree/master/data). The code uses OpenCV, Numpy, Tensorflow and Keras.
 
+The data used to train and test the model is [here (new data)](http://robotics.upo.es/datasets/irlrrt/) and [here (upo_fcn_learning package)](https://github.com/robotics-upo/upo_fcn_learning/tree/master/data). 
 
+### Prerequisites
 
-## To test the code:
+The code uses OpenCV, Numpy, Tensorflow and Keras.
+
+To install the python dependencies:
+```
+sudo apt install python-pip
+sudo pip install -r requirements.txt
+```
+
+[Opencv](https://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html) has to be installed to link with your gcc compiler.
+
+### Installing
+
+First, download the repo and create a bin folder on it:
 
 ```
 cd <workspace>
 git clone https://github.com/robotics-upo/RRT_MEDIRL.git
 cd RRT_MEDIRL
-TF_INC=$(python -c 'import tensorflow as tf; print(tf.sysconfig.get_include())') && TF_LIB=$(python -c 'import tensorflow as tf; print(tf.sysconfig.get_lib())')
-g++ -std=c++11 -shared rrt_star.cc -o rrt_star.so -fPIC -I $TF_INC -I$TF_INC/external/nsync/public -L$TF_LIB -I/usr/local/include/opencv -I/usr/local/include/opencv2 -L/usr/local/lib/ -D_GLIBCXX_USE_CXX_11_ABI=0 -ltensorflow_framework -O2 -D_GLIBCXX_USE_CXX11_ABI=0 -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_stitching && chmod +x *
- g++ -std=c++11 -shared metric_path.cc -o metric_path.so -fPIC -I $TF_INC -I$TF_INC/external/nsync/public -L$TF_LIB -I/usr/local/include/opencv -I/usr/local/include/opencv2 -L/usr/local/lib/ -D_GLIBCXX_USE_CXX_11_ABI=0 -ltensorflow_framework -O2 -D_GLIBCXX_USE_CXX11_ABI=0 -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_stitching && chmod +x *
-rrt_train_evaluate_and_predict.py
+mkdir bin
 ```
 
+Change the variable "RRT_DIR" in the [compile.sh file](compile.sh) to have the dir of the bin folder. Then, compile the layers as:
+
+```
+sudo chmod +x compile.sh
+./compile.sh
+```
+
+## Running the tests
+
+Unfortunately, one of our biggest optimization is to compute the array size in compilation time.
+To modify the parameters of the RRT*, change them in the first lines of the [RRTStar.h file](include/RRTStar.h).
+
+To run the test, change the parameter RRT_STAR_INPUT_SHAPE_1 to 1. Then, from the main folder, run:
+```
+python test_python_rrt.py
+```
+This will create two new images in the [resources](resources) folder. One with the path and other with the map and the path of the test example.
+
+To train or evaluate a network (or predict using it), modify the values **train**, **evaluate** and **predict** in [rrt_train file](rrt_train.py). Values equal to 1 will execute that part of the code. Values equal to 0 won't.
+Also, the value of **batch_size** in [rrt_train file](rrt_train.py) has to be equal than the **RRT_STAR_INPUT_SHAPE_1** in [RRTStar.h file](include/RRTStar.h).
+
+As the loading of images is really slow, make sure the first time you run a new dataset in [the rrt_train file](rrt_train.py) as:
+
+```
+create_npy_files = True
+load_npy_files = False
+```
+
+and the other times:
+
+```
+create_npy_files = False
+load_npy_files = True
+```
+
+Lastly, in [the rrt_train file](rrt_train.py), variables **dataset_dir**, **testset_dir**, **save_dir1** and **save_dir2** should point to the dataset your going to use (right now pointing to the [data folder](data)).
 
 
 ## Structure and contents:
 In the folders you will find data and scripts to reproduce our experiments and results. About folders and its contents:
 
-### code Folder:
+### Matlab Code Folder:
 The code to make the plots used in the paper are in this folder. All the code in this folder use Matlab 2017b.
 
-### result, labels and rrt_out Folders:
-In those folders, the rrt_predict.py and rrt_train_evaluate_and_predict.py save the outputs.The csv and image labels are saved in the *labels* folder. The csv and image of the output of the RRT_MEDIRL are saved in the *rrt_out* folder. Images of the map, the output of the RRT_MEDIRL and the labels are saved in the *result* folder.
+### Results Folder
 
+[Results folder](result) will be empty until you execute the [rrt_train file](rrt_train.py) in prediction mode.
 
-### rrt_star.cc:
-A c++ file that computes the rrt\* using a costmap and a map. It is necessary to compile this code before to execute any of the python code.
+### Resources Folder
 
-### metric_path.cc:
-A c++ file that computes the metrics to compare the label with the output of the RRT_MEDIRL. It is necessary to compile this code before to execute any of the python code.
+[The Resources folder](resources) contains an example to test the path planning algorithm.
 
+### Data Folder
 
-### rrt_train.py:
-To launch the script, you can use:
-```
-python rrt_train.py
-```
-This program will train the RRT_MEDIRL network and save on *estimator*.
-
-
-### rrt_predict.py:
-To launch the script, you can use:
-```
-python rrt_predict.py
-```
-This program will use the trained model of the RRT_MEDIRL network (*estimator*) to predict the output with the test data.
-
-### rrt_evaluate.py:
-To launch the script, you can use:
-```
-python rrt_evaluate.py
-```
-When rrt_evaluate.py is executed, it uses the trained model of the RRT_MEDIRL network (*estimator*) to compute and save some metrics of the output of the net.
-
-### rrt_train_evaluate_and_predict.py
-To launch the script, you can use:
-```
-python rrt_train_evaluate_and_predict.py
-```
-This program does the same as rrt_train.py, rrt_predict.py and rrt_evaluate.py, but just in one file
-
-
+[The data folder](data) should contain the dataset to use.
 
 

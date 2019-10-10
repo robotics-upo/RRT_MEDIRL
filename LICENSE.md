@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2019 Service Robotic Lab (Universidad Pablo de Olavide)
+Copyright (c) 2019 Service Robotics Lab (Universidad Pablo de Olavide)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -45,7 +45,7 @@ sudo chmod +x compile.sh
 Unfortunately, one of our biggest optimization is to compute the array size in compilation time.
 To modify the parameters of the RRT*, change them in the first lines of the [RRTStar.h file](include/RRTStar.h).
 
-To run the test, change the parameter RRT_STAR_INPUT_SHAPE_1 to 1. Then, from the main folder, run:
+To run the test, change the parameter **RRT_STAR_INPUT_SHAPE_1** to 1. Then, from the main folder, run:
 ```
 python test_python_rrt.py
 ```
